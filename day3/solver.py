@@ -37,8 +37,10 @@ class Claim:
 class Grid:
     def __init__(self):
         self.grid = {}
+        self.cids = []
 
     def add_claim(self, claim: Claim):
+        self.cids.append(claim.cid)
         for point in claim.get_points():
             if point in self.grid:
                 self.grid[point].append(claim.cid)
@@ -47,6 +49,12 @@ class Grid:
 
     def overlaps(self):
         return [point for point in self.grid if len(self.grid[point]) >= 2]
+
+    def overlapping_cids(self):
+        cids = []
+        for point in self.overlaps():
+            cids.extend(self.grid[point])
+        return set(cids)
 
 
 def load_claims():
@@ -60,7 +68,7 @@ def main():
     for claim in load_claims():
         grid.add_claim(claim)
 
-    click.secho(f'Overlaps count={len(grid.overlaps())}')
+    click.secho(f'Non-overlapping claims: {set(grid.cids) - grid.overlapping_cids()}')
 
 
 main()
